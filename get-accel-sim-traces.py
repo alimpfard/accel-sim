@@ -47,7 +47,7 @@ class Card:
 
     def getTotalCompressed(self):
         total = 0.0
-        for name,suite in self.suites.iteritems():
+        for name,suite in self.suites.items():
             try:
                 total += suite.compressedSize
             except TypeError:
@@ -56,13 +56,13 @@ class Card:
 
     def getTotalUncompressed(self):
         total = 0.0
-        for name,suite in self.suites.iteritems():
+        for name,suite in self.suites.items():
             total += suite.uncompressedSize
         return total
 
 def downloadTrace(cardName, suiteName):
     webFile = os.path.join(WEB_DIRECTORY, cardName, VERSION + ".latest", suiteName + ".tgz")
-    print "\n\nDownloading {0}".format(webFile)
+    print("\n\nDownloading {0}".format(webFile))
     wget = Popen(["wget " + webFile], stderr=STDOUT, shell=True)
     wget.communicate()
     if wget.returncode != 0:
@@ -113,18 +113,18 @@ def main():
                 suite.uncompressedSize = getNumRaw(size)
     
     # Infor the user what is available - ask them what they want to do
-    print "\n\nCurrently Available Traces:"
-    for cardName, card in sizeDict.iteritems():
-        print "GPU Name: {0}. All Apps Compressed (Download size): {1}, All Apps Uncompressed (Size on disk when used): {2}"\
-            .format(card.name, millify(card.getTotalCompressed()), millify(card.getTotalUncompressed()))
-        for name, suite in card.suites.iteritems():
-            print "\t{0}: Compressed = {1}, Uncompressed = {2}".format(suite.name,\
-                millify(suite.compressedSize), millify(suite.uncompressedSize))
+    print("\n\nCurrently Available Traces:")
+    for cardName, card in sizeDict.items():
+        print("GPU Name: {0}. All Apps Compressed (Download size): {1}, All Apps Uncompressed (Size on disk when used): {2}"\
+            .format(card.name, millify(card.getTotalCompressed()), millify(card.getTotalUncompressed())))
+        for name, suite in card.suites.items():
+            print("\t{0}: Compressed = {1}, Uncompressed = {2}".format(suite.name,\
+                millify(suite.compressedSize), millify(suite.uncompressedSize)))
     
     selectionValid = False
     while not selectionValid:
         if options.apps == None:
-            selection = raw_input("\n-------\nWhat do you want to download?"\
+            selection = input("\n-------\nWhat do you want to download?"\
                 "\n<card/suite>,<card/suite> (i.e. tesla-v100/rodinia-3.1,tesla-v100/cudasdk)"\
                 "\n(Default=all/all) : ")
             if selection == "" or selection == None:
@@ -136,16 +136,16 @@ def main():
                 cardName = item.split(r"/")[0]
                 suiteName = item.split(r"/")[1]
                 if cardName == "all":
-                    for cardName, card in sizeDict.iteritems():
+                    for cardName, card in sizeDict.items():
                         if suiteName == "all":
-                            for suiteName, suite in card.suites.iteritems():
+                            for suiteName, suite in card.suites.items():
                                 downloadTrace(cardName, suiteName)
                         else:
                             downloadTrace(cardName, suiteName)
                 else:
                     card = sizeDict[cardName]
                     if suiteName == "all":
-                        for suiteName, suite in card.suites.iteritems():
+                        for suiteName, suite in card.suites.items():
                             downloadTrace(cardName, suiteName)
                     else:
                         downloadTrace(cardName, suiteName)
@@ -153,12 +153,12 @@ def main():
             selectionValid = True
         except Exception as e:
             selectionValid = False
-            print "Invalid Input: {0}".format(e)
+            print("Invalid Input: {0}".format(e))
             if options.apps != None:
                 sys.exit(1)
     
-    print "\n\nDownload successful to {0}.\nFiles must be uncompressed with tar -xzvf <filename> to be usable by accel-sim"\
-        .format(hw_run_dir)
+    print("\n\nDownload successful to {0}.\nFiles must be uncompressed with tar -xzvf <filename> to be usable by accel-sim"\
+        .format(hw_run_dir))
 
 if __name__ == '__main__':
     main()
